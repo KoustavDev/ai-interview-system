@@ -1,0 +1,61 @@
+/ai-interview-system/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── login/page.tsx
+│   ├── signup/page.tsx
+│   ├── profile/page.tsx          # Shared profile page (optional if different views)
+│
+│   ├── recruiter/
+│   │   ├── dashboard/page.tsx
+│   │   ├── post-job/page.tsx
+│   │   ├── applicants/[jobId]/page.tsx
+│   │   ├── report/[candidateId]/page.tsx
+│   │   ├── shortlisted/page.tsx       # NEW: Recruiter view for shortlisted candidates
+│   │   └── profile/page.tsx           # NEW: Recruiter personal profile
+│
+│   └── candidate/
+│       ├── dashboard/page.tsx
+│       ├── applied-jobs/page.tsx
+│       ├── job/[jobId]/page.tsx
+│       ├── interview/[applicationId]/page.tsx
+│       ├── success/page.tsx
+│       └── profile/page.tsx           # NEW: Candidate personal profile
+│
+├── components/
+│   ├── layout/
+│   │   └── Navbar.tsx                # NEW: Global navigation bar
+│
+│   ├── auth/
+│   │   ├── LoginForm.tsx
+│   │   └── SignupForm.tsx
+│
+│   ├── recruiter/
+│   │   ├── JobPostForm.tsx
+│   │   ├── ApplicantCard.tsx
+│   │   ├── ReportCard.tsx           # NEW: Card to show interview reports
+│   │   └── ShortlistCard.tsx        # NEW: Component for shortlisted candidates
+│
+│   ├── candidate/
+│   │   ├── JobCard.tsx
+│   │   ├── ResumeUpload.tsx
+│   │   └── ApplicationStatus.tsx    # NEW: Status updates for applications
+│
+│   ├── chat/
+│   │   └── InterviewChatBot.tsx
+│
+│   └── ui/
+│       ├── Button.tsx
+│       ├── Input.tsx
+│       ├── Loader.tsx
+│       └── Modal.tsx                # NEW: Generic modal if needed
+│
+├── constants/
+├── lib/
+├── hooks/
+├── types/
+└── utils/
+
+
+
+
