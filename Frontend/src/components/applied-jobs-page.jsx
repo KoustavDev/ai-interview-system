@@ -7,81 +7,6 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner";
 
-
-
-// Sample applied jobs data
-const sampleAppliedJobs = [
-  {
-    id: "1",
-    jobTitle: "Senior Full Stack Developer",
-    companyName: "TechCorp Solutions",
-    applicationDate: "2024-01-20",
-    status: "Shortlisted",
-    location: "San Francisco, CA",
-    jobType: "Full-time",
-    salary: "$120k - $160k",
-    hrContact: {
-      name: "Sarah Johnson",
-      email: "sarah.johnson@techcorp.com",
-      phone: "+1 (555) 123-4567",
-    },
-  },
-  {
-    id: "2",
-    jobTitle: "Frontend React Developer",
-    companyName: "InnovateTech",
-    applicationDate: "2024-01-18",
-    status: "interviewed",
-    location: "New York, NY",
-    jobType: "Full-time",
-    salary: "$90k - $130k",
-  },
-  {
-    id: "3",
-    jobTitle: "DevOps Engineer",
-    companyName: "CloudScale Inc",
-    applicationDate: "2024-01-16",
-    status: "Shortlisted",
-    location: "Remote",
-    jobType: "Remote",
-    salary: "$110k - $150k",
-    hrContact: {
-      name: "Michael Chen",
-      email: "michael.chen@cloudscale.com",
-    },
-  },
-  {
-    id: "4",
-    jobTitle: "UI/UX Designer",
-    companyName: "DesignStudio Pro",
-    applicationDate: "2024-01-15",
-    status: "Rejected",
-    location: "Austin, TX",
-    jobType: "Full-time",
-    salary: "$80k - $110k",
-  },
-  {
-    id: "5",
-    jobTitle: "Data Scientist",
-    companyName: "DataInsights Corp",
-    applicationDate: "2024-01-14",
-    status: "Pending",
-    location: "Seattle, WA",
-    jobType: "Full-time",
-    salary: "$130k - $170k",
-  },
-  {
-    id: "6",
-    jobTitle: "Junior Software Engineer",
-    companyName: "StartupHub",
-    applicationDate: "2024-01-12",
-    status: "interviewed",
-    location: "Boston, MA",
-    jobType: "Full-time",
-    salary: "$70k - $90k",
-  },
-]
-
 export function AppliedJobsPage({ jobs = sampleAppliedJobs, onContactHR, onViewDetails }) {
   const [filter, setFilter] = useState("all")
 
@@ -272,7 +197,7 @@ export function AppliedJobsPage({ jobs = sampleAppliedJobs, onContactHR, onViewD
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2">
-                      {job.jobTitle} {job.status === "shortlisted" && "lol"}
+                      {job.jobTitle} {job.status === "shortlisted"}
                     </h3>
                     <div className="flex items-center gap-2 text-muted-foreground mb-2">
                       <Building2 className="h-4 w-4 flex-shrink-0" />
