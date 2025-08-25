@@ -1,8 +1,8 @@
 "use client";
 
 import { useRecruiterDashboard } from "@/api/queryMutations";
+import { RecruiterDashboardSkeleton } from "@/components/loading-state/recruiter-dashboard-skeleton";
 import { RecruiterDashboard } from "@/components/recruiter-dashboard";
-import Loader from "@/components/ui/Loader";
 
 export default function DashboardPage() {
   const {data, isPending} = useRecruiterDashboard();
@@ -25,7 +25,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       {isPending ? (
-        <Loader />
+        <RecruiterDashboardSkeleton />
       ) : (
         <RecruiterDashboard
           jobData={jobsData}

@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import Loader from "./ui/Loader";
 import { useRouter } from "next/navigation";
 
 export function CandidateDashboard({ jobs, onApply, ref, hasNextPage }) {
@@ -350,7 +349,14 @@ export function CandidateDashboard({ jobs, onApply, ref, hasNextPage }) {
         )}
         {hasNextPage && (
           <div ref={ref}>
-            <Loader />
+            <div className="flex justify-center items-center py-8">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <span className="text-sm text-muted-foreground">
+                  Loading more jobs...
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </div>

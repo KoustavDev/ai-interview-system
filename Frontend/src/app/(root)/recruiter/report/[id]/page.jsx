@@ -1,21 +1,21 @@
 "use client";
 
 import { use } from "react";
-import Loader from "@/components/ui/Loader";
 import { useRouter } from "next/navigation";
 import { ApplicantReport } from "@/components/applicant-report";
 import { useChangeApplicationStatus, useGetReport } from "@/api/queryMutations";
+import { ApplicantReportSkeleton } from "@/components/loading-state/applicant-report-skeleton";
+import { ApplicantReportNotFound } from "@/components/error-state/applicant-report-not-found";
 
 export default function ApplicantReportPage({ params }) {
   const { id } = use(params);
   const router = useRouter();
   const { mutateAsync: changeStatus } = useChangeApplicationStatus();
-  const { data, isPending } = useGetReport(id);
+  const { data, isPending, isError } = useGetReport(id);
 
   let reportData = {};
 
-  if (!isPending) {
-    if (!data.interview) router.back();
+  if (!isPending && !isError) {
     reportData = {
       candidateId: data.id,
       candidateName: data.candidate.user.name,
@@ -50,13 +50,17 @@ export default function ApplicantReportPage({ params }) {
   return (
     <div className="min-h-screen bg-background">
       {isPending ? (
-        <Loader />
+        <ApplicantReportSkeleton />
       ) : (
-        <ApplicantReport
-          onBack={handleBack}
-          reportData={reportData}
-          onAction={onAction}
-        />
+        isError ? (
+          <ApplicantReportNotFound />
+        ) : (
+          <ApplicantReport
+            reportData={reportData}
+            onBack={handleBack}
+            onAction={onAction}
+          />
+        )
       )}
     </div>
   );

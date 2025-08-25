@@ -40,7 +40,7 @@ export const getJobs = async ({ pageParam = 1 }) => {
   const { data } = await axiosInstance.get(API_ENDPOINTS.JOBS.GET_JOB, {
     params: {
       page: pageParam,
-      limit: 4,
+      limit: 6,
       query: "",
       sortBy: "createdAt",
       sortType: "desc",

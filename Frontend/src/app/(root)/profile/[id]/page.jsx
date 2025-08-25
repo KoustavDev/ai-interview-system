@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetProfile } from "@/api/queryMutations";
+import { ProfileNotFound } from "@/components/error-state/profile-not-found";
 import { ProfilePage } from "@/components/profile-page";
 import Loader from "@/components/ui/Loader";
 import extractFileNameFromUrl from "@/lib/fileNameFinder";
@@ -8,7 +9,7 @@ import { use } from "react";
 
 export default function ProfilePageDemo({ params }) {
   const { id } = use(params);
-  const { data: user, isPending } = useGetProfile(id);
+  const { data: user, isPending, isError } = useGetProfile(id);
 
   let profileData;
 
@@ -47,7 +48,13 @@ export default function ProfilePageDemo({ params }) {
   }
   return (
     <div className="min-h-screen bg-background">
-      {isPending ? <Loader /> : <ProfilePage profileData={profileData} />}
+      {isPending ? (
+        <Loader />
+      ) : isError ? (
+        <ProfileNotFound />
+      ) : (
+        <ProfilePage profileData={profileData} />
+      )}
     </div>
   );
 }

@@ -1,15 +1,16 @@
 "use client";
 
 import { useCreateApplication, useGetJobById } from "@/api/queryMutations";
+import { JobNotFound } from "@/components/error-state/job-not-found";
 import { JobDetailPage } from "@/components/job-detail-page";
-import Loader from "@/components/ui/Loader";
+import { JobDetailSkeleton } from "@/components/loading-state/job-detail-skeleton";
 import { useAuthProvider } from "@/context/AuthProvider";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 
 export default function JobDetailPageDemo({ params }) {
   const { id } = use(params);
-  const { data, isPending } = useGetJobById(id);
+  const { data, isPending, isError } = useGetJobById(id);
   const { mutateAsync: actionApply, isPending: actionLoading } =
     useCreateApplication();
   const { user, loading } = useAuthProvider();
@@ -17,7 +18,7 @@ export default function JobDetailPageDemo({ params }) {
 
   let job = null;
 
-  if (!isPending && !loading) {
+  if (!isPending && !loading && !isError ) {
     job = {
       id: data.id,
       title: data.title,
@@ -61,7 +62,9 @@ export default function JobDetailPageDemo({ params }) {
   return (
     <div className="min-h-screen bg-background">
       {isPending || loading ? (
-        <Loader />
+        <JobDetailSkeleton />
+      ) : isError ? (
+        <JobNotFound />
       ) : (
         <JobDetailPage
           job={job}

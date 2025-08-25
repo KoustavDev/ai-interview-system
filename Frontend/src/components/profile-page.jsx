@@ -25,7 +25,7 @@ import { useAuthProvider } from "@/context/AuthProvider";
 
 export function ProfilePage({ profileData }) {
   const { user } = useAuthProvider();
-  const isEditable = profileData.id === user?.id;
+  const isEditable = profileData?.id === user?.id;
 
   const userInitials = profileData?.name
     .split(" ")

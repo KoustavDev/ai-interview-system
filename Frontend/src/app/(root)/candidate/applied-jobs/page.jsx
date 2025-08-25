@@ -2,7 +2,7 @@
 
 import { useAppliedJobs } from "@/api/queryMutations";
 import { AppliedJobsPage } from "@/components/applied-jobs-page";
-import Loader from "@/components/ui/Loader";
+import { AppliedJobsSkeleton } from "@/components/loading-state/applied-jobs-skeleton";
 import { useRouter } from "next/navigation";
 
 export default function AppliedJobsPageDemo() {
@@ -40,15 +40,13 @@ export default function AppliedJobsPageDemo() {
   };
 
   const handleViewDetails = (jobId) => {
-    // In a real app, this would navigate to job details page
-    console.log(`Viewing details for job ${jobId}`);
     router.push(`/candidate/job/${jobId}`);
   };
 
   return (
     <div className="min-h-screen bg-background">
       {isPending ? (
-        <Loader />
+        <AppliedJobsSkeleton jobCount={3} />
       ) : (
         <AppliedJobsPage
           jobs={jobs}

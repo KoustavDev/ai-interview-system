@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Loader from "@/components/ui/Loader";
 import { useCreateApplication, useJobs } from "@/api/queryMutations";
 import { useInView } from "react-intersection-observer";
 import { CandidateDashboard } from "@/components/candidate-dashboard";
+import { CandidateDashboardSkeleton } from "@/components/loading-state/candidate-dashboard-skeleton";
 
 export default function CandidateDashboardPage() {
   const { ref, inView } = useInView();
-  const { mutateAsync: createApplication} =
-    useCreateApplication();
+  const { mutateAsync: createApplication } = useCreateApplication();
   const { data, fetchNextPage, hasNextPage, isPending } = useJobs();
 
   const jobs = data
@@ -45,7 +44,7 @@ export default function CandidateDashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       {isPending ? (
-        <Loader />
+        <CandidateDashboardSkeleton />
       ) : (
         <CandidateDashboard
           onApply={handleApply}

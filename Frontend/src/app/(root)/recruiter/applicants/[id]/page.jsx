@@ -2,7 +2,7 @@
 
 import { useGetApplicationByJobId } from "@/api/queryMutations";
 import { ApplicantsList } from "@/components/applicants-list";
-import Loader from "@/components/ui/Loader";
+import { ApplicantsListSkeleton } from "@/components/loading-state/applicants-list-skeleton";
 import { use } from "react";
 
 export default function ApplicantsDemoPage({ params }) {
@@ -41,7 +41,7 @@ export default function ApplicantsDemoPage({ params }) {
   return (
     <div className="min-h-screen bg-background">
       {isPending ? (
-        <Loader />
+        <ApplicantsListSkeleton />
       ) : (
         <ApplicantsList
           jobTitle={jobTitle}
