@@ -38,6 +38,7 @@ export default function JobDetailPageDemo({ params }) {
       status: data?.status,
       isRecruiter: user.role === "recruiter" ? true : false,
     };
+    document.title = `${data.title} | AI Interview System`;
   }
   const handleStartInterview = async (jobId, jobTitle) => {
     if (job.isApplied === false && job.status === undefined) {
@@ -56,6 +57,11 @@ export default function JobDetailPageDemo({ params }) {
       };
     }
   };
+  // useEffect(()=> {
+  //     document.title = user
+  //       ? `${user?.name} | AI Interview System`
+  //       : "Profile | AI Interview System";
+  //   },[user]);
 
   const handleBack = () => router.back();
 

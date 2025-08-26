@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const Loader = () => (
-  <div className="flex w-full">
+  <div className="min-h-screen flex items-center justify-cen">
     <Image
       src="/loader.svg"
       alt="loader"

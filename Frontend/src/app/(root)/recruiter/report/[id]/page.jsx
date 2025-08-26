@@ -32,12 +32,13 @@ export default function ApplicantReportPage({ params }) {
       experience: data.candidate.experience,
       interviewScript: data.interview?.chatMessages.map((message) => ({
         sender:
-        message.sender === "ai" ? "AI Interviewer" : data.candidate.user.name,
+          message.sender === "ai" ? "AI Interviewer" : data.candidate.user.name,
         message: message.message,
         timestamp: message.timestamp,
       })),
       reportId: data.interview?.report.id,
     };
+    document.title = `${data.candidate.user.name} - Report | AI Interview System`;
   }
 
   const handleBack = () => router.back();
@@ -51,16 +52,14 @@ export default function ApplicantReportPage({ params }) {
     <div className="min-h-screen bg-background">
       {isPending ? (
         <ApplicantReportSkeleton />
+      ) : isError ? (
+        <ApplicantReportNotFound />
       ) : (
-        isError ? (
-          <ApplicantReportNotFound />
-        ) : (
-          <ApplicantReport
-            reportData={reportData}
-            onBack={handleBack}
-            onAction={onAction}
-          />
-        )
+        <ApplicantReport
+          reportData={reportData}
+          onBack={handleBack}
+          onAction={onAction}
+        />
       )}
     </div>
   );

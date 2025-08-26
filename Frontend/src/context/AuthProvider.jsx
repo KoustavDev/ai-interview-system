@@ -1,6 +1,6 @@
 "use client";
 import { currentUser } from "@/api/services/authService";
-import Loader from "@/components/ui/Loader";
+import { UniversalLoading } from "@/components/loading-state/universal-loading";
 import { useRouter } from "next/navigation";
 import React, {
   createContext,
@@ -84,7 +84,7 @@ const AuthProvider = ({ children }) => {
 
 // Wrapper component to handle suspense
 const AuthProviderWrapper = ({ children }) => (
-  <Suspense fallback={<Loader />}>
+  <Suspense fallback={<UniversalLoading />}>
     <AuthProvider>{children}</AuthProvider>
   </Suspense>
 );

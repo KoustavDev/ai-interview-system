@@ -9,8 +9,8 @@ import {
   getResumeUploadUrl,
   resumeUpload,
 } from "@/api/services/candidateService";
+import { ProfileUpdateSkeleton } from "@/components/loading-state/profile-update-skeleton";
 import { ProfileUpdatePage } from "@/components/profile-update";
-import Loader from "@/components/ui/Loader";
 import { useAuthProvider } from "@/context/AuthProvider";
 import extractFileNameFromUrl from "@/lib/fileNameFinder";
 import { useRouter } from "next/navigation";
@@ -133,7 +133,7 @@ export default function ProfileUpdatePageRoute({ params }) {
   return (
     <>
       {isPending ? (
-        <Loader />
+        <ProfileUpdateSkeleton role={rootUser?.role}/>
       ) : (
         <ProfileUpdatePage
           initialData={profileData}

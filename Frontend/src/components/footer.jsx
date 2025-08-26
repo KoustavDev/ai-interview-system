@@ -1,7 +1,4 @@
-import React from 'react'
-import { Input } from "@/components/ui/input";
-import Link from 'next/link';
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -38,7 +35,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/koustav-majhi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-slate-700 hover:bg-primary rounded-lg flex items-center justify-center transition-colors duration-200 group"
@@ -52,7 +49,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://github.com"
+                href="https://github.com/KoustavDev"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-slate-700 hover:bg-primary rounded-lg flex items-center justify-center transition-colors duration-200 group"
@@ -224,28 +221,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="border-t border-slate-700 pt-8 mb-8">
-          <div className="max-w-md mx-auto text-center">
-            <h3 className="text-lg font-semibold text-white mb-2">
-              Stay Updated
-            </h3>
-            <p className="text-slate-300 mb-4">
-              Get the latest updates on AI recruitment trends and product news.
-            </p>
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-primary"
-              />
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6">
-                Subscribe
-              </Button>
-            </div>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
         <div className="border-t border-slate-700 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -279,6 +254,6 @@ const Footer = () => {
       </div>
     </footer>
   );
-}
+};
 
-export default Footer
+export default Footer;
