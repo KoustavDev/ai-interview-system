@@ -107,10 +107,7 @@ export function Navbar({
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={userAvatar}
-                        alt={userName}
-                      />
+                      <AvatarImage src={userAvatar} alt={userName} />
                       <AvatarFallback className="text-xs">
                         {userInitials}
                       </AvatarFallback>
@@ -204,7 +201,7 @@ export function Navbar({
                         );
                       })}
                       <Link
-                        href="/profile"
+                        href={`/profile/${user.id}`}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="flex items-center space-x-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                       >
