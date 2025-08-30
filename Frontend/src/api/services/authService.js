@@ -48,7 +48,6 @@ export const getProfile = async (userId) => {
 };
 
 export const getImageUplodeUrl = async ({ fileName, fileType }) => {
-
   const { data } = await axiosInstance.post(
     API_ENDPOINTS.AUTH.IMAGE_UPLOAD_URL,
     {
@@ -65,4 +64,35 @@ export const imageUpload = async (url, file) => {
       "Content-Type": file.type,
     },
   });
+};
+
+export const forgotPassword = async (email) => {
+  const { data, success } = await axiosInstance.post(
+    API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+    { email }
+  );
+  return { data, success };
+};
+
+export const validateToken = async (token) => {
+  const { data } = await axiosInstance.get(
+    API_ENDPOINTS.AUTH.VALIDATE_TOKEN,
+    {
+      params: {
+        token,
+      },
+    }
+  );
+  return data;
+};
+
+export const resetPassword = async ({ password, id }) => {
+  const { data, success } = await axiosInstance.post(
+    API_ENDPOINTS.AUTH.RESET_PASSWORD,
+    {
+      password,
+      id,
+    }
+  );
+  return { data, success };
 };

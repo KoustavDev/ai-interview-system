@@ -13,7 +13,15 @@ import {
 } from "../services/userService.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client } from "../index.js";
+import { redisClient, s3Client } from "../index.js";
+import crypto from "crypto";
+import {
+  setResetWindow,
+  storeToken,
+  validateResetWindow,
+  validateToken,
+} from "../utils/redisAction.js";
+import { sendVerificationEmail } from "../utils/email.js";
 
 const generateAccessAndRefreshToken = async (user) => {
   try {
@@ -136,11 +144,13 @@ export const loginUser = asyncHandler(async (req, res) => {
   const accessCookieConfig = {
     httpOnly: true,
     secure: true,
+    sameSite: "None",
     maxAge: 30 * 60 * 1000,
   };
   const refreshCookieConfig = {
     httpOnly: true,
     secure: true,
+    sameSite: "None",
     maxAge: 10 * 24 * 60 * 60 * 1000,
   };
   return res
@@ -172,6 +182,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   const cookieConfig = {
     httpOnly: true,
     secure: true,
+    sameSite: "None",
   };
   return res
     .status(200)
@@ -182,7 +193,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
 
 export const renewTokens = asyncHandler(async (req, res) => {
   // collect refresh token from user
-  const userToken = req.cookies?.refreshToken || req.body?.refreshToken;
+  const userToken = req.cookies?.refreshToken || req.query?.refreshToken;
 
   // Verification
   if (!userToken) throw new apiErrors(401, "unauthorized request");
@@ -320,6 +331,76 @@ export const getUserById = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new apiSuccess(200, finaluser, "User profile is fetched successfully!"));
+    .json(
+      new apiSuccess(200, finaluser, "User profile is fetched successfully!")
+    );
 });
 
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) throw new apiErrors(400, "Email is needed !");
+
+  // Check the user is existing or not
+  const userExist = await prisma.user.findUnique({ where: { email: email } });
+  if (!userExist) throw new apiErrors(400, "User with email does not exists!");
+
+  // Generate token
+  const token = crypto.randomBytes(32).toString("hex"); // 64 chars, 256 bits
+
+  // Store token in redis
+  await storeToken(token, userExist.id);
+
+  // Send email
+  await sendVerificationEmail(email, token);
+
+  return res.status(200).json(new apiSuccess(200, { token }, "Token send!"));
+});
+
+export const validateGeneratedToken = asyncHandler(async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) throw new apiErrors(400, "Token is missing!");
+
+  // validate token
+  const userId = await validateToken(token);
+  if (!userId) throw new apiErrors(400, "Invalid or expired token!");
+
+  // Set a reset window
+  await setResetWindow(userId);
+
+  return res
+    .status(200)
+    .json(new apiSuccess(200, { userId }, "Token is valid!"));
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { password, id } = req.body;
+
+  if (!password || !id) throw new apiErrors(400, "All fields are required");
+
+  const isValid = await validateResetWindow(id);
+  if (!isValid) throw new apiErrors(400, "Link expired!");
+
+  // Check the user is existing or not
+  const user = await prisma.user.findUnique({ where: { id: id } });
+  if (!user) throw new apiErrors(400, "User not found!");
+
+  // Hashed the password
+  const hashedPassword = await hashPassword(password);
+
+  // Update password in DB
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: hashedPassword },
+  });
+  if (!updatedUser) throw new apiErrors(500, "Failed to change password");
+
+  // cleanup reset window
+  await redisClient.del(`reset-window:${id}`);
+
+  // Send response
+  return res
+    .status(200)
+    .json(new apiSuccess(200, {}, "Password changed successfully!"));
+});

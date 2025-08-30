@@ -52,7 +52,18 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAndRedirect = async () => {
       const res = await checkAuth();
-      if (!res) router.push("/login");
+      const pathname = window.location.pathname;
+      if (
+        pathname.includes("/") ||
+        pathname.includes("login") ||
+        pathname.includes("signup") ||
+        pathname.includes("forgot-password")
+      ) {
+        console.log("transfer");        
+      } else {
+        console.log("non-transfer");
+        if (!res) router.push("/login");
+      }
     };
     checkAndRedirect();
   }, [checkAuth, router]);

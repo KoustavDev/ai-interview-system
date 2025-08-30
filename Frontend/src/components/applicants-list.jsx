@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 export function ApplicantsList({ jobTitle, candidates, onDownloadResume }) {
   const [filter, setFilter] = useState("all");
@@ -202,28 +203,30 @@ export function ApplicantsList({ jobTitle, candidates, onDownloadResume }) {
               className="hover:shadow-lg transition-all duration-200 flex flex-col h-full"
             >
               <CardHeader className="pb-4">
-                <div className="flex items-start gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={candidate.avatar || "/placeholder.svg"}
-                      alt={candidate.name}
-                    />
-                    <AvatarFallback className="text-sm font-semibold">
-                      {getInitials(candidate.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg leading-tight line-clamp-1">
-                      {candidate.name}
-                    </CardTitle>
-                    <div className="space-y-1 mt-1">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Mail className="h-3 w-3" />
-                        <span className="truncate">{candidate.email}</span>
+                <Link href={`/profile/${candidate.userId}`}>
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage
+                        src={candidate.avatar || "/placeholder.svg"}
+                        alt={candidate.name}
+                      />
+                      <AvatarFallback className="text-sm font-semibold">
+                        {getInitials(candidate.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-lg leading-tight line-clamp-1">
+                        {candidate.name}
+                      </CardTitle>
+                      <div className="space-y-1 mt-1">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Mail className="h-3 w-3" />
+                          <span className="truncate">{candidate.email}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </CardHeader>
 
               <CardContent className="pt-0 flex-1 flex flex-col">

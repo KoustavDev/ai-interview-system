@@ -8,6 +8,9 @@ import {
   renewTokens,
   imageUploadUrl,
   getUserById,
+  forgotPassword,
+  validateGeneratedToken,
+  resetPassword,
 } from "../controllers/user.controller.js";
 import verifyUser from "../middlewares/auth.middleware.js";
 
@@ -16,6 +19,9 @@ const userRoute = Router();
 userRoute.post("/register", registerUser);
 userRoute.post("/login", loginUser);
 userRoute.route("/renew-tokens").get(renewTokens);
+userRoute.route("/forgot-password").post(forgotPassword);
+userRoute.route("/validate-token").get(validateGeneratedToken);
+userRoute.route("/reset-password").post(resetPassword);
 
 // Secured routes
 // This routes are protected by my middleware shield.

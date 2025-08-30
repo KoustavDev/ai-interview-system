@@ -1,4 +1,5 @@
 import cors from "cors";
+import Redis from "ioredis";
 import dotenv from "dotenv";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -18,6 +19,14 @@ app.use(
 app.use(cookieParser());
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Redis Client Connection
+export const redisClient = new Redis(process.env.REDIS_SERVICE_URL);
+
+redisClient.on("connect", () => console.log("Connected to Redis"));
+redisClient.on("reconnecting", () => console.log("Reconnecting to Redis..."));
+redisClient.on("close", () => console.log("Redis connection closed"));
+redisClient.on("error", (err) => console.error("Redis Error:", err));
 
 export const s3Client = new S3Client({
   region: "ap-south-1",

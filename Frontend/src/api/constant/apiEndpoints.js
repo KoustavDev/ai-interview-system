@@ -9,6 +9,9 @@ const API_ENDPOINTS = {
     LOGOUT: "/users/logout",
     PROFILE: "/users/profile/",
     IMAGE_UPLOAD_URL: "/users/image-uplode-url",
+    FORGOT_PASSWORD: "/users/forgot-password",
+    VALIDATE_TOKEN: "/users/validate-token",
+    RESET_PASSWORD: "/users/reset-password",
   },
   CANDIDATE: {
     RESUME_UPLOAD_URL: "/candidate/resume-uplode-url",

@@ -58,8 +58,11 @@ export const loginSchema = z.object({
     .min(1, "Email is required")
     .email("Please enter a valid email address")
     .max(100, "Email must be less than 100 characters"),
-  password: z.string().min(1, "Password is required").min(8, "Password must be at least 8 characters"),
-})
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must be at least 8 characters"),
+});
 
 export const recruiterProfileUpdateSchema = z.object({
   company: z
@@ -158,3 +161,30 @@ export const jobPostingSchema = z.object({
     .min(1, { message: "Please add at least one requirement." })
     .max(15, { message: "You can add up to 15 requirements." }),
 });
+
+// Forgot password validation schema
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address")
+    .max(100, "Email must be less than 100 characters"),
+});
+
+// Reset password validation schema
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password must be less than 100 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

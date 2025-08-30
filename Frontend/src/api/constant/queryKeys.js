@@ -10,6 +10,7 @@ const QUERY_KEYS = {
   SHORTLISTED_APPLICATION: "shortlisted-applications",
   CHANGE_APPLICATION_STATUS: "applications_status",
   GET_REPORT: "getReport",
+  VALIDATE_TOKEN: "validateToken",
 };
 
 export default QUERY_KEYS;

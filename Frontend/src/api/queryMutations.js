@@ -6,11 +6,14 @@ import {
 } from "@tanstack/react-query";
 import {
   currentUser,
+  forgotPassword,
   getProfile,
   login,
   logout,
   renewTokens,
+  resetPassword,
   signIn,
+  validateToken,
 } from "./services/authService";
 import QUERY_KEYS from "./constant/queryKeys";
 import { getResumeUploadUrl, updateProfile } from "./services/candidateService";
@@ -23,7 +26,13 @@ import {
   getApplication,
   shortLised,
 } from "./services/applicationService";
-import { chatWithAI, deleteInterview, generateReport, getReport, startInterview } from "./services/interviewService";
+import {
+  chatWithAI,
+  deleteInterview,
+  generateReport,
+  getReport,
+  startInterview,
+} from "./services/interviewService";
 
 export const useCreateAccount = () => {
   return useMutation({
@@ -57,6 +66,30 @@ export const useRenewTokens = () => {
 export const useLogout = () => {
   return useMutation({
     mutationFn: () => logout(),
+  });
+};
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: (email) => forgotPassword(email),
+  });
+};
+
+export const useValidateToken = (token) => {
+  return useQuery({
+    queryKey: ["validate-token", token], // include token so it reruns when token changes
+    queryFn: () => validateToken(token),
+    enabled: !!token, // only run if token is provided
+    refetchOnWindowFocus: false, // no refetch on tab focus
+    refetchOnReconnect: false, // no refetch on network reconnect
+    retry: false, // don't retry automatically (optional)
+    staleTime: Infinity, // data never becomes stale
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: ({ password, id }) => resetPassword({ password, id }),
   });
 };
 
@@ -268,7 +301,7 @@ export const useChat = () => {
   return useMutation({
     mutationFn: ({ interviewId, message }) => chatWithAI(interviewId, message),
   });
-}
+};
 
 export const useDeleteInterview = () => {
   return useMutation({

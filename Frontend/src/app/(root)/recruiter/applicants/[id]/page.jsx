@@ -15,6 +15,7 @@ export default function ApplicantsDemoPage({ params }) {
   if (!isPending) {
     candidates = data.applications.map((app) => ({
       id: app.id,
+      userId: app.candidate.userId,
       name: app.candidate.user.name,
       email: app.candidate.user.email,
       avatar: app.candidate.user.avatar,
