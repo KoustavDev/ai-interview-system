@@ -4,6 +4,7 @@ import apiSuccess from "../utils/apiSuccess.js";
 import prisma from "../lib/prisma.js";
 import openAiClient from "../lib/openAI.js";
 import { buildReportPrompt, buildSystemPrompt } from "../lib/prompt.js";
+import { redisClient } from "../index.js";
 
 export const startInterview = asyncHandler(async (req, res) => {
   // Collect payloads
@@ -361,6 +362,18 @@ export const getReport = asyncHandler(async (req, res) => {
 
   if (!applicationId) throw new apiErrors(400, "Application id is needed !");
 
+  const cache = await redisClient.get(
+    `user:${req.user.id}:report:${applicationId}`
+  );
+
+  if (cache) {
+    const cachedReport = JSON.parse(cache);
+    return res
+      .status(200)
+      .json(
+        new apiSuccess(200, cachedReport, "Report is fetched seccessfully !")
+      );
+  }
   const report = await prisma.application.findUnique({
     where: { id: applicationId },
     include: {
@@ -377,7 +390,7 @@ export const getReport = asyncHandler(async (req, res) => {
           },
         },
       },
-      job: { select: { title: true } },
+      job: { select: { title: true, recruiterId: true } },
       interview: {
         include: {
           chatMessages: {
@@ -391,6 +404,21 @@ export const getReport = asyncHandler(async (req, res) => {
 
   if (!report) throw new apiErrors(500, "Failed to fetch report !");
 
+  // TODO
+  if (report.job.recruiterId !== req.user.recruiterProfile.id)
+    throw new apiErrors(403, "Not access forbidden!");
+
+  // Remove recruiterId from job before sending response
+  if (report.job && report.job.recruiterId) {
+    delete report.job.recruiterId;
+  }
+
+  await redisClient.set(
+    `user:${req.user.id}:report:${applicationId}`,
+    JSON.stringify(report),
+    "EX",
+    30 * 60
+  );
   return res
     .status(200)
     .json(new apiSuccess(200, report, "Report is fetched seccessfully !"));

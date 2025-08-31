@@ -313,6 +313,24 @@ export const getUserById = asyncHandler(async (req, res) => {
 
   if (!userId) throw new apiErrors(400, "User id is needed !");
 
+  // Search is cache
+  const cache = await redisClient.get(`profile:${userId}`);
+
+  // If present then send it
+  if (cache) {
+     const cachedUser = JSON.parse(cache);
+     return res
+       .status(200)
+       .json(
+         new apiSuccess(
+           200,
+           cachedUser,
+           "User profile is fetched successfully!"
+         )
+       );
+  }
+
+  // DB call
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -327,7 +345,16 @@ export const getUserById = asyncHandler(async (req, res) => {
 
   if (!user) throw new apiErrors(404, "User not found!");
 
+  // Sanatize it
   const finaluser = sanitizeUser(user);
+
+  // Store it in cache
+  await redisClient.set(
+    `profile:${userId}`,
+    JSON.stringify(finaluser),
+    "EX",
+    15 * 60
+  );
 
   return res
     .status(200)

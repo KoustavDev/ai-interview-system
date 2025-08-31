@@ -3,6 +3,7 @@ import apiErrors from "../utils/apiErrors.js";
 import apiSuccess from "../utils/apiSuccess.js";
 import prisma from "../lib/prisma.js";
 import { publicUrl } from "../services/getPublicS3Url.js";
+import { redisClient } from "../index.js";
 
 export const getRecruiterProfile = asyncHandler(async (req, res) => {
   const { userId } = req.params;
@@ -60,6 +61,9 @@ export const updateRecruiterProfile = asyncHandler(async (req, res) => {
   if (!updatedProfile)
     throw new apiErrors(500, "Recruiter profile updation is failed.");
 
+  // Invalodate profile cache
+  await redisClient.del(`profile:${req.user.id}`);
+
   return res
     .status(200)
     .json(
@@ -72,6 +76,25 @@ export const updateRecruiterProfile = asyncHandler(async (req, res) => {
 });
 
 export const recruiterDashboard = asyncHandler(async (req, res) => {
+  // Search in cache
+  const cache = await redisClient.get(
+    `user:${req.user.id}:recruiter:dashboard:${req.user.recruiterProfile.id}`
+  );
+
+  // If present then send it
+  if (cache) {
+    const cachedDashboard = JSON.parse(cache);
+    return res
+      .status(200)
+      .json(
+        new apiSuccess(
+          200,
+          cachedDashboard,
+          "Dashboard information is fetched!"
+        )
+      );
+  }
+
   const jobs = await prisma.job.findMany({
     where: {
       recruiterId: req.user.recruiterProfile.id,
@@ -102,6 +125,14 @@ export const recruiterDashboard = asyncHandler(async (req, res) => {
   );
 
   const averageApplication = Math.ceil(totalApplications / jobs.length);
+
+  // Cache it
+  await redisClient.set(
+    `user:${req.user.id}:recruiter:dashboard:${req.user.recruiterProfile.id}`,
+    JSON.stringify({ jobs, totalApplications, averageApplication }),
+    "EX",
+    15 * 60
+  );
 
   return res
     .status(200)

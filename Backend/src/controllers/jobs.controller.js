@@ -2,6 +2,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import apiErrors from "../utils/apiErrors.js";
 import apiSuccess from "../utils/apiSuccess.js";
 import prisma from "../lib/prisma.js";
+import { redisClient } from "../index.js";
 
 export const createJob = asyncHandler(async (req, res) => {
   const {
@@ -62,6 +63,11 @@ export const createJob = asyncHandler(async (req, res) => {
 
   if (!newJob) throw new apiErrors(500, "Failed to create job post !");
 
+  // Invalidate recruiter dashboard cache
+  await redisClient.del(
+    `user:${req.user.id}:recruiter:dashboard:${req.user.recruiterProfile.id}`
+  );
+  
   return res
     .status(200)
     .json(new apiSuccess(200, newJob, "Job created successfully"));
@@ -212,6 +218,17 @@ export const getJobById = asyncHandler(async (req, res) => {
     throw new apiErrors(400, "Job ID is required");
   }
 
+  // Search is cache
+  const cache = await redisClient.get(`user:${req.user.id}:job:${jobId}`);
+
+  // If present then send it
+  if (cache) {
+    const cachedJob = JSON.parse(cache);
+    return res
+      .status(200)
+      .json(new apiSuccess(200, cachedJob, "Job fetched successfully"));
+  }
+
   // Fetch job by ID along with recruiter info, their user profile and applications
   const job = await prisma.job.findUnique({
     where: { id: jobId },
@@ -251,6 +268,14 @@ export const getJobById = asyncHandler(async (req, res) => {
   if (candidateId) status = job.applications[0]?.status;
   // Remove the applications array from response if you don't want to expose it
   // delete job.applications;
+
+  // Cache it
+  await redisClient.set(
+    `user:${req.user.id}:job:${jobId}`,
+    JSON.stringify({ ...job, isApplied, status }),
+    "EX",
+    10 * 60
+  );
 
   // Respond with the job details
   return res

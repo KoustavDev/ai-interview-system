@@ -4,7 +4,7 @@ import apiSuccess from "../utils/apiSuccess.js";
 import prisma from "../lib/prisma.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client } from "../index.js";
+import { redisClient, s3Client } from "../index.js";
 import { publicUrl } from "../services/getPublicS3Url.js";
 
 export const getCandidateProfile = asyncHandler(async (req, res) => {
@@ -124,6 +124,9 @@ export const updateCandidateProfile = asyncHandler(async (req, res) => {
 
   if (!updatedProfile)
     throw new apiErrors(500, "Failed to update candidate profile.");
+
+  // Invalodate profile cache
+  await redisClient.del(`profile:${req.user.id}`);
 
   return res
     .status(200)

@@ -7,8 +7,8 @@ const jobRoute = Router();
 
 jobRoute.use(verifyUser);
 
-jobRoute.route("/create-job").post(recruiterRole, createJob);
+jobRoute.route("/create-job").post(recruiterRole, createJob); // Invalidate cache (recruiter dashboard) d
 jobRoute.route("/get-jobs").get(getAllJobs);
-jobRoute.route("/get-job/:jobId").get(getJobById);
+jobRoute.route("/get-job/:jobId").get(getJobById); // Cache d
 
 export default jobRoute;

@@ -16,19 +16,19 @@ applicationRoutes.use(verifyUser);
 
 applicationRoutes
   .route("/create-application")
-  .post(candidateRole, createApplication);
+  .post(candidateRole, createApplication); // Invalidate cache (getJobById, getApplicationsByJobId, applied-jobs, recruiter dashboard) d
 applicationRoutes
   .route("/get-application/:jobId")
-  .get(recruiterRole, getApplicationsByJobId);
+  .get(recruiterRole, getApplicationsByJobId); // Cache d
 applicationRoutes
   .route("/shortlisted-applications")
-  .get(recruiterRole, getInterviewedApplicationsByRecruiter);
+  .get(recruiterRole, getInterviewedApplicationsByRecruiter); // Cache d
 
 applicationRoutes
   .route("/status")
-  .patch(recruiterRole, updateApplicationStatus);
+  .patch(recruiterRole, updateApplicationStatus); // Invalidate cache (shortlisted-applications) d  
 applicationRoutes
   .route("/applied-jobs")
-  .get(candidateRole, getCandidateApplications);
+  .get(candidateRole, getCandidateApplications); // Cache d
 
 export default applicationRoutes;

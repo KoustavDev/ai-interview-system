@@ -59,22 +59,11 @@ app.use("/api/v1/applications",applicationRoutes );
 app.use("/api/v1/interview",interviewRouter );
 
 /**
-create job R (Done)
-see all job (pagination) both (done)
-see individula job both (done)
-
-
-create application (apply job) C (done)
-see applications R (done)
-shortlist application R (In Review or interviewed status and AIReport score is above 80) (done)
-applied jobs (see applications) C (done)
-
-
-start interview C (done)
-interview chating C (done)
-generate ai report R (done)
-
-see report R (done)
-
-change application status (shortlisted or rejected) R (done)
+profile : profile:${userId}
+recruiter dashboard : user:${req.user.id}:recruiter:dashboard:${req.user.recruiterProfile.id}
+recruiter shortlisted : user:${req.user.id}:recruiter:shortlisted:${req.user.recruiterProfile.id}
+job : user:${req.user.id}:job:${jobId}
+getApplicationsByJobId : user:${req.user.id}:job:applications:${jobId}
+candidate applied-jobs : `user:${req.user.id}:candidate:applied-jobs:${candidateId}`
+report : user:${req.user.id}:report:${applicationId}
  */

@@ -12,7 +12,7 @@ interviewRouter.route("/start").post(candidateRole, startInterview);
 interviewRouter.route("/chat").post(candidateRole, sendMessage);
 interviewRouter.route("/report").post(candidateRole, generateInterviewReport);
 interviewRouter.route("/delete").delete(deleteInterview);
-interviewRouter.route("/report").get(recruiterRole, getReport);
+interviewRouter.route("/report").get(recruiterRole, getReport); // Cache d
 
 
 export default interviewRouter;

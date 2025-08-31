@@ -44,7 +44,7 @@ export const validateResetWindow = async (userId) => {
     return await redisClient.exists(`reset-window:${userId}`);
   } catch (error) {
     console.log("Error validating reset-window token", error);
-    throw new apiErrors(500, "Failed to validating reset-window token!");
+    throw new apiErrors(500, "Failed to validating reset-window token !");
     return false;
   }
 };
