@@ -371,7 +371,7 @@ export const getReport = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .json(
-        new apiSuccess(200, cachedReport, "Report is fetched seccessfully !")
+        new apiSuccess(200, cachedReport, "Report is fetched successfully !")
       );
   }
   const report = await prisma.application.findUnique({
@@ -406,7 +406,7 @@ export const getReport = asyncHandler(async (req, res) => {
 
   // TODO
   if (report.job.recruiterId !== req.user.recruiterProfile.id)
-    throw new apiErrors(403, "Not access forbidden!");
+    throw new apiErrors(403, "You are not authorized to access this report!");
 
   // Remove recruiterId from job before sending response
   if (report.job && report.job.recruiterId) {
@@ -421,5 +421,5 @@ export const getReport = asyncHandler(async (req, res) => {
   );
   return res
     .status(200)
-    .json(new apiSuccess(200, report, "Report is fetched seccessfully !"));
+    .json(new apiSuccess(200, report, "Report is fetched successfully !"));
 });

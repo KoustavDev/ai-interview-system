@@ -275,9 +275,13 @@ export const useChangeApplicationStatus = () => {
   return useMutation({
     mutationFn: ({ applicationId, status }) =>
       changeStatus({ applicationId, status }),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.SHORTLISTED_APPLICATION],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_REPORT, variables.applicationId],
       });
     },
   });

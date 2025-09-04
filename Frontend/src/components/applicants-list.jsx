@@ -165,14 +165,14 @@ export function ApplicantsList({ jobTitle, candidates, onDownloadResume }) {
               All ({candidates.length})
             </Button>
             <Button
-              variant={filter === "completed" ? "default" : "outline"}
+              variant={filter === "shortlisted" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter("shortlisted")}
             >
               Shortlisted ({shortlistedCount})
             </Button>
             <Button
-              variant={filter === "completed" ? "default" : "outline"}
+              variant={filter === "interviewed" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter("interviewed")}
             >
@@ -186,7 +186,7 @@ export function ApplicantsList({ jobTitle, candidates, onDownloadResume }) {
               Pending ({pendingCount})
             </Button>
             <Button
-              variant={filter === "pending" ? "default" : "outline"}
+              variant={filter === "rejected" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter("rejected")}
             >

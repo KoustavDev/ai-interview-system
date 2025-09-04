@@ -95,7 +95,9 @@ export const getApplicationsByJobId = asyncHandler(async (req, res) => {
 
   if (!job) throw new apiErrors(404, "Job not found");
 
-  // TODO: if job.recruiterId !== req.recruiterPrifile.id then send 409 unauthorise code.
+  // TODO: if job.recruiterId !== req.recruiterPrifile.id then send 403 unauthorise code.
+  if (job.recruiterId !== req.user.recruiterProfile.id)
+    throw new apiErrors(403, "Not authorized to get applications of this job!");
 
   // Step 4: Parallelized DB queries in one go using Promise.all
   const applications = await prisma.application.findMany({
@@ -337,11 +339,21 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
   // Step 2: Check if application exists
   const existingApplication = await prisma.application.findUnique({
     where: { id: applicationId },
+    include: {
+      job: {
+        select: { recruiterId: true },
+      },
+    },
   });
 
   if (!existingApplication) throw new apiErrors(404, "Application not found");
 
   // TODO: if application.job.recruiterId !== req.recruiterPrifile.id then send 409 unauthorise code.
+  if (existingApplication.job.recruiterId !== req.user.recruiterProfile.id)
+    throw new apiErrors(
+      403,
+      "You are not authorize to change application status!"
+    );
   // Step 3: Update the status
   const updatedApplication = await prisma.application.update({
     where: { id: applicationId },
@@ -351,6 +363,7 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
   await redisClient.del(
     `user:${req.user.id}:recruiter:shortlisted:${req.user.recruiterProfile.id}`
   );
+  await redisClient.del(`user:${req.user.id}:report:${applicationId}`);
 
   // Step 4: Return success response
   return res.status(200).json(
@@ -377,13 +390,15 @@ export const getCandidateApplications = asyncHandler(async (req, res) => {
 
   if (cache) {
     const cachedApplications = JSON.parse(cache);
-    return res.status(200).json(
-      new apiSuccess(
-        200,
-        cachedApplications,
-        "Candidate applications fetched successfully"
-      )
-    );
+    return res
+      .status(200)
+      .json(
+        new apiSuccess(
+          200,
+          cachedApplications,
+          "Candidate applications fetched successfully"
+        )
+      );
   }
 
   // Step 2: Fetch all applications of this candidate

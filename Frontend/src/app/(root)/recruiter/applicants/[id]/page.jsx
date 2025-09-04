@@ -7,12 +7,12 @@ import { use } from "react";
 
 export default function ApplicantsDemoPage({ params }) {
   const { id } = use(params);
-  const { data, isPending } = useGetApplicationByJobId(id);
+  const { data, isPending, isError } = useGetApplicationByJobId(id);
 
   let candidates = [];
   let jobTitle = "";
 
-  if (!isPending) {
+  if (!isPending && !isError) {
     candidates = data.applications.map((app) => ({
       id: app.id,
       userId: app.candidate.userId,
@@ -28,6 +28,8 @@ export default function ApplicantsDemoPage({ params }) {
     }));
     jobTitle = data.jobTitle.title;
   }
+
+  if (isError) throw new Error("Not autorized to get applications of this job!");
   
   const handleDownloadResume = (candidateId, resumeUrl) => {
     // Simulate file download

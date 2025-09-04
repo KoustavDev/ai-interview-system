@@ -48,6 +48,8 @@ export default function ApplicantReportPage({ params }) {
     return success;
   };
 
+  if (isError) throw new Error("You are not authorized to access this report!");
+  
   return (
     <div className="min-h-screen bg-background">
       {isPending ? (

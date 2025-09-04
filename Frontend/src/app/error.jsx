@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function Error({ error, reset }) {
   useEffect(() => {
-    console.error("Global error:", error);
+    console.error("Global error:", error.message);
   }, [error]);
 
   // Determine error type based on error message
@@ -15,13 +15,16 @@ export default function Error({ error, reset }) {
     errorType = "network";
   } else if (error.message.includes("timeout")) {
     errorType = "timeout";
+  }
+  else if (error.message.includes("authorized")) {
+    errorType = "403";
   } else if (
     error.message.includes("500") ||
     error.message.includes("server")
   ) {
     errorType = "500";
   }
-  console.log(errorType);
+
   return (
     <UniversalError
       type={errorType}
