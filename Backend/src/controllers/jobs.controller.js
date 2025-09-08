@@ -3,8 +3,16 @@ import apiErrors from "../utils/apiErrors.js";
 import apiSuccess from "../utils/apiSuccess.js";
 import prisma from "../lib/prisma.js";
 import { redisClient } from "../index.js";
+import { getJobsQuerySchema, jobPostingSchema } from "../validator/job.validator.js";
+import formatZodError from "../utils/zodErrorFormater.js";
 
 export const createJob = asyncHandler(async (req, res) => {
+  // Validate request body
+  const result = jobPostingSchema.safeParse();
+
+  if (!result.success) throw new apiErrors(400, formatZodError(result.error));
+
+  // If valid, destructure safe data
   const {
     recruiterId,
     title,
@@ -18,23 +26,7 @@ export const createJob = asyncHandler(async (req, res) => {
     responsibility,
     benefits,
     requirement,
-  } = req.body;
-
-  // Basic validation
-  if (
-    !recruiterId ||
-    !title ||
-    !type ||
-    !salary ||
-    !description ||
-    !experience ||
-    !skillsRequired?.length ||
-    !responsibility?.length ||
-    !benefits?.length ||
-    !requirement?.length
-  ) {
-    throw new apiErrors(400, "Missing required job fields");
-  }
+  } = result.data;
 
   // Check if recruiter exists
   const recruiter = await prisma.recruiterProfile.findUnique({
@@ -67,41 +59,24 @@ export const createJob = asyncHandler(async (req, res) => {
   await redisClient.del(
     `user:${req.user.id}:recruiter:dashboard:${req.user.recruiterProfile.id}`
   );
-  
+
   return res
     .status(200)
     .json(new apiSuccess(200, newJob, "Job created successfully"));
 });
 
 export const getAllJobs = asyncHandler(async (req, res) => {
-  // Destructure query parameters with default values
-  const {
-    page = 1,
-    limit = 10,
-    query,
-    sortBy = "createdAt",
-    sortType = "desc",
-    recruiterName,
-  } = req.query;
+  const result = getJobsQuerySchema.safeParse(req.query);
 
-  const pageNumber = parseInt(page);
-  const limitNumber = parseInt(limit);
-  const candidateId = req.user?.candidateProfile?.id;
-
-  // Validate pagination parameters
-  if (
-    isNaN(pageNumber) ||
-    isNaN(limitNumber) ||
-    pageNumber < 1 ||
-    limitNumber < 1
-  ) {
-    throw new apiErrors(
-      400,
-      "Page and limit must be positive integers greater than 0"
-    );
+  if (!result.success) {
+    throw new apiErrors(400, formatZodError(result.error));
   }
 
-  const skip = (pageNumber - 1) * limitNumber;
+  // Destructure query parameters
+  const { page, limit, query, sortBy, sortType, recruiterName } = result.data;
+  const candidateId = req.user?.candidateProfile?.id;
+
+  const skip = (page - 1) * limit;
 
   const filter = {}; // Base filter object for Prisma query
 
@@ -138,7 +113,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
         new apiSuccess(
           200,
           {
-            currentPage: pageNumber,
+            currentPage: page,
             totalPages: 0,
             totalJobs: 0,
             jobs: [],
@@ -147,6 +122,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
         )
       );
     }
+    filter.recruiterId = { in: recruiterIds };
   }
 
   // Fetch total job count and paginated job list
@@ -158,7 +134,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
         [sortBy]: sortType === "asc" ? "asc" : "desc",
       },
       skip,
-      take: limitNumber,
+      take: limit,
       include: {
         recruiter: {
           include: {
@@ -199,8 +175,8 @@ export const getAllJobs = asyncHandler(async (req, res) => {
     new apiSuccess(
       200,
       {
-        currentPage: pageNumber,
-        totalPages: Math.ceil(totalJobs / limitNumber),
+        currentPage: page,
+        totalPages: Math.ceil(totalJobs / limit),
         totalJobs,
         jobsWithIsApplied,
       },

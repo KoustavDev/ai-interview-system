@@ -3,6 +3,8 @@ import apiErrors from "../utils/apiErrors.js";
 import apiSuccess from "../utils/apiSuccess.js";
 import prisma from "../lib/prisma.js";
 import { redisClient } from "../index.js";
+import { updateApplicationStatusSchema } from "../validator/application.validatoe.js";
+import formatZodError from "../utils/zodErrorFormater.js";
 
 export const createApplication = asyncHandler(async (req, res) => {
   const { jobId } = req.body;
@@ -321,20 +323,15 @@ export const getInterviewedApplicationsByRecruiter = asyncHandler(
 );
 
 export const updateApplicationStatus = asyncHandler(async (req, res) => {
-  const { applicationId, status } = req.body;
-
   // Step 1: Validate input
-  if (!applicationId || !status)
-    throw new apiErrors(400, "applicationId and status are required");
+  const result = updateApplicationStatusSchema.safeParse(req.body);
 
-  // Validate if status is a valid enum
-  const validStatuses = ["pending", "shortlisted", "rejected", "interviewed"];
-  if (!validStatuses.includes(status)) {
-    throw new apiErrors(
-      400,
-      `Invalid status. Must be one of: ${validStatuses.join(", ")}`
-    );
+  if (!result.success) {
+    throw new apiErrors(400, formatZodError(result.error));
   }
+
+  // If valid, destructure safe data
+  const { applicationId, status } = result.data;
 
   // Step 2: Check if application exists
   const existingApplication = await prisma.application.findUnique({
@@ -348,18 +345,20 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
 
   if (!existingApplication) throw new apiErrors(404, "Application not found");
 
-  // TODO: if application.job.recruiterId !== req.recruiterPrifile.id then send 409 unauthorise code.
+  // Check recruiter is authorized or not
   if (existingApplication.job.recruiterId !== req.user.recruiterProfile.id)
     throw new apiErrors(
       403,
-      "You are not authorize to change application status!"
+      "You are not authorized to change application status!"
     );
+
   // Step 3: Update the status
   const updatedApplication = await prisma.application.update({
     where: { id: applicationId },
     data: { status },
   });
 
+  // Invalidate cache
   await redisClient.del(
     `user:${req.user.id}:recruiter:shortlisted:${req.user.recruiterProfile.id}`
   );

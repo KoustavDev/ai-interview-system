@@ -6,6 +6,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { redisClient, s3Client } from "../index.js";
 import { publicUrl } from "../services/getPublicS3Url.js";
+import { resumeUploadSchema } from "../validator/user.validator.js";
 
 export const getCandidateProfile = asyncHandler(async (req, res) => {
   const { userId } = req.params;
@@ -25,18 +26,13 @@ export const getCandidateProfile = asyncHandler(async (req, res) => {
 });
 
 export const resumeUploadUrl = asyncHandler(async (req, res) => {
-  const { fileName, fileType } = req.body;
+  const result = resumeUploadSchema.safeParse(req.body);
 
-  if (!fileName || !fileType) throw new apiErrors(400, "File name is needed !");
-
-  // File type validation
-  const allowedTypes = [
-    "application/pdf",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
-  if (!allowedTypes.includes(fileType)) {
-    throw new apiErrors(400, "Unsupported file type!");
+  if (!result.success) {
+    throw new apiErrors(400, result.error.issues[0].message);
   }
+
+  const { fileName, fileType } = result.data;
 
   // Get Upload URL
   const command = new PutObjectCommand({

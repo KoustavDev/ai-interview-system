@@ -5,6 +5,8 @@ import prisma from "../lib/prisma.js";
 import openAiClient from "../lib/openAI.js";
 import { buildReportPrompt, buildSystemPrompt } from "../lib/prompt.js";
 import { redisClient } from "../index.js";
+import { sendMessageSchema } from "../validator/interview.validator.js";
+import formatZodError from "../utils/zodErrorFormater.js";
 
 export const startInterview = asyncHandler(async (req, res) => {
   // Collect payloads
@@ -119,10 +121,13 @@ export const startInterview = asyncHandler(async (req, res) => {
 });
 
 export const sendMessage = asyncHandler(async (req, res) => {
-  const { interviewId, message } = req.body;
+  const validation = sendMessageSchema.safeParse(req.body);
 
-  if (!interviewId || !message)
-    throw new apiErrors(400, "Missing interviewId or message");
+  if (!validation.success) {
+    throw new apiErrors(400, formatZodError(validation.error));
+  }
+
+  const { interviewId, message } = validation.data;
 
   const interview = await prisma.aIInterview.findUnique({
     where: { id: interviewId },

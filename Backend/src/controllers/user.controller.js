@@ -22,6 +22,14 @@ import {
   validateToken,
 } from "../utils/redisAction.js";
 import { sendVerificationEmail } from "../utils/email.js";
+import {
+  emailSchema,
+  fileUploadSchema,
+  loginSchema,
+  resetPasswordSchema,
+  signupSchema,
+} from "../validator/user.validator.js";
+import formatZodError from "../utils/zodErrorFormater.js";
 
 const generateAccessAndRefreshToken = async (user) => {
   try {
@@ -54,12 +62,13 @@ const generateAccessAndRefreshToken = async (user) => {
 };
 
 export const registerUser = asyncHandler(async (req, res) => {
-  // Get credintial
-  const { name, email, password, role, companyName } = req.body;
+  // Validate request body
+  const result = signupSchema.safeParse(req.body);
 
-  // Validate it
-  if (!name || !email || !password || !role)
-    throw new apiErrors(400, "All fields are required");
+  if (!result.success) throw new apiErrors(400, formatZodError(result.error));
+
+  // If valid, destructure safe data
+  const { name, email, password, role, companyName } = result.data;
 
   // Caheck the user is existing or not
   const userExist = await prisma.user.findUnique({ where: { email: email } });
@@ -119,12 +128,13 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
-  // Get the credentials
-  const { email, password } = req.body;
+  // Validate request body
+  const result = loginSchema.safeParse(req.body);
 
-  // verify it
-  if (!password || !email)
-    throw new apiErrors(400, "password or email is required");
+  if (!result.success) throw new apiErrors(400, formatZodError(result.error));
+
+  // Get the credentials
+  const { email, password } = result.data;
 
   // find user in DB bases on email
   const user = await prisma.user.findUnique({ where: { email } });
@@ -279,15 +289,13 @@ export const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 export const imageUploadUrl = asyncHandler(async (req, res) => {
-  const { fileName, fileType } = req.body;
+  const result = fileUploadSchema.safeParse(req.body);
 
-  if (!fileName || !fileType) throw new apiErrors(400, "File name is needed !");
-
-  // File type validation
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-  if (!allowedTypes.includes(fileType)) {
-    throw new apiErrors(400, "Unsupported file type!");
+  if (!result.success) {
+    return next(new apiErrors(400, formatZodError(result.error)));
   }
+
+  const { fileName, fileType } = result.data;
 
   // Get Upload URL
   const command = new PutObjectCommand({
@@ -318,16 +326,12 @@ export const getUserById = asyncHandler(async (req, res) => {
 
   // If present then send it
   if (cache) {
-     const cachedUser = JSON.parse(cache);
-     return res
-       .status(200)
-       .json(
-         new apiSuccess(
-           200,
-           cachedUser,
-           "User profile is fetched successfully!"
-         )
-       );
+    const cachedUser = JSON.parse(cache);
+    return res
+      .status(200)
+      .json(
+        new apiSuccess(200, cachedUser, "User profile is fetched successfully!")
+      );
   }
 
   // DB call
@@ -364,9 +368,13 @@ export const getUserById = asyncHandler(async (req, res) => {
 });
 
 export const forgotPassword = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+  const result = emailSchema.safeParse(req.body);
 
-  if (!email) throw new apiErrors(400, "Email is needed !");
+  if (!result.success) {
+    throw new apiErrors(400, result.error.issues[0].message);
+  }
+
+  const { email } = result.data;
 
   // Check the user is existing or not
   const userExist = await prisma.user.findUnique({ where: { email: email } });
@@ -402,9 +410,13 @@ export const validateGeneratedToken = asyncHandler(async (req, res) => {
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
-  const { password, id } = req.body;
+  const result = resetPasswordSchema.safeParse(req.body);
 
-  if (!password || !id) throw new apiErrors(400, "All fields are required");
+  if (!result.success) {
+    throw new apiErrors(400, result.error.issues[0].message);
+  }
+
+  const { password, id } = result.data;
 
   const isValid = await validateResetWindow(id);
   if (!isValid) throw new apiErrors(400, "Link expired!");
