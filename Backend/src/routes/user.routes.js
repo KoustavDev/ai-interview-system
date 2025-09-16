@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  changeCurrentPassword,
   getCurrentUser,
   loginUser,
   logoutUser,
@@ -27,7 +26,6 @@ userRoute.route("/reset-password").post(resetPassword);
 // This routes are protected by my middleware shield.
 
 userRoute.route("/logout").post(verifyUser, logoutUser);
-userRoute.route("/change-password").post(verifyUser, changeCurrentPassword);
 userRoute.route("/current-user").get(verifyUser, getCurrentUser);
 userRoute.route("/profile/:userId").get(verifyUser, getUserById); // Cache d
 userRoute.route("/image-uplode-url").post(verifyUser, imageUploadUrl);

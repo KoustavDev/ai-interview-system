@@ -54,16 +54,12 @@ const AuthProvider = ({ children }) => {
       const res = await checkAuth();
       const pathname = window.location.pathname;
       if (
-        pathname.includes("/") ||
-        pathname.includes("login") ||
+        !(pathname.includes("login") ||
         pathname.includes("signup") ||
-        pathname.includes("forgot-password")
+        pathname.includes("forgot-password") || res)
       ) {
-        console.log("transfer");        
-      } else {
-        console.log("non-transfer");
-        if (!res) router.push("/login");
-      }
+        router.push("/login");      
+      } 
     };
     checkAndRedirect();
   }, [checkAuth, router]);

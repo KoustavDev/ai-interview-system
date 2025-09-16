@@ -5,7 +5,7 @@ const publicRoutes = ["/", "/login", "/signup"];
 
 export function middleware(req) {
   const token = req.cookies.get("accessToken")?.value;
-  console.log("Access token cookie : ", token);
+  // console.log("Access token cookie : ", token);
   // const { pathname } = req.nextUrl;
 
   // // If route is NOT public → check auth
