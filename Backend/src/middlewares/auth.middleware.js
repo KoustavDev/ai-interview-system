@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import apiErrors from "../utils/errors/apiErrors.js";
 import asyncHandler from "../utils/helpers/asyncHandler.js";
-import prisma from "../config/prisma.js";
 import { UserService } from "../services/user.service.js";
+import { UserRepository } from "../repositories/user.repository.js";
 
 // This middleware verify that the user verifyed to goto some routes or not.
 // It a shield to prevent unauthorized user to goto some protected routes.
@@ -33,21 +33,7 @@ const verifyUser = asyncHandler(async (req, res, next) => {
         .status(401)
         .json({ success: false, message: "Unauthorized request !" });
 
-    const user = await prisma.user.findUnique({
-      where: { id: verifyedToken.id },
-      include:
-        verifyedToken.role === "recruiter"
-          ? {
-              recruiterProfile: true,
-            }
-          : {
-              candidateProfile: {
-                include: {
-                  resumes: true,
-                },
-              },
-            },
-    });
+    const user = await UserRepository.profileById(verifyedToken.id);
 
     if (!user) throw new apiErrors(401, "Invalid Access Token");
 
