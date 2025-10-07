@@ -6,14 +6,10 @@ import { useRouter } from "next/navigation";
 export default function InterviewSuccessPageDemo() {
   const router = useRouter();
   const handleGoToDashboard = () => {
-    // In a real app, this would navigate to the candidate dashboard
-    console.log("Navigating to candidate dashboard")
     router.push("/candidate/dashboard");
   }
 
   const handleBrowseJobs = () => {
-    // In a real app, this would navigate to job listings
-    console.log("Navigating to job listings")
     router.push("/candidate/applied-jobs");
   }
 

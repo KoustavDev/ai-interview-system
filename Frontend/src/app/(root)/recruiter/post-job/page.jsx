@@ -11,7 +11,6 @@ export default function PostJobPage() {
   const router = useRouter();
 
   const handleSubmitJob = async (data) => {
-    // console.log("Submitting job data:", data);
     const {
       benefits,
       deadline,
@@ -54,18 +53,3 @@ export default function PostJobPage() {
     </div>
   );
 }
-
-let a = {
-  title: "aksjdhfakjsdf",
-  description:
-    "OIhdfciASDGFykhdfgbqsjodfbASIHKDBkhasdfgbasouiyvbhnSOJDKVB QSUFHVBskjdcvbfqsjkohfgqisuvncOWKSJFDGBVOWIYUDE",
-  benefits: ["kjcnvaksjcvbkjhbvss"],
-  deadline: "2025-08-30T00:00:00+05:30",
-  jobType: "part-time",
-  experience: "2-4",
-  location: "kjabdfjHABDF",
-  requirements: ["ohandskjcABHD"],
-  responsibilities: ["osnsdckjsndfvj"],
-  salary: "KJqebiHSDB",
-  skills: ["kasjdbhk"],
-};

@@ -57,11 +57,7 @@ export default function JobDetailPageDemo({ params }) {
       };
     }
   };
-  // useEffect(()=> {
-  //     document.title = user
-  //       ? `${user?.name} | AI Interview System`
-  //       : "Profile | AI Interview System";
-  //   },[user]);
+
 
   const handleBack = () => router.back();
 

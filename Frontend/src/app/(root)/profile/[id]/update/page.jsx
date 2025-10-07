@@ -127,7 +127,7 @@ export default function ProfileUpdatePageRoute({ params }) {
       if (success) router.push(`/profile/${rootUser.id}`);
       else console.error("Failed to update");
     }
-    // You could redirect to the profile page or show a success message
+    
   };
 
   return (
@@ -144,27 +144,3 @@ export default function ProfileUpdatePageRoute({ params }) {
   );
 }
 
-/**
-{
-  "id": "0a98e1a7-4400-4414-96e1-e6bc338f3185",
-  "name": "Koustav Das",
-  "email": "koustav@cd.com",
-  "role": "candidate",
-  "about": "asdfasdfasdfa",
-  "avatar": "blob:http://localhost:3000/bfc697a4-4a19-45bc-ba42-4561d743452b",
-  "education": "fdasfa",
-  "experience": "asdfasf",
-  "skills": [
-    "asdfa",
-    "asdfadsf",
-    "asdf"
-  ],
-  "resume": {
-    "fileName": "BCA_5_MIM501_28_KOUSTAV_MAJHI.pdf",
-    "fileUrl": "blob:http://localhost:3000/9185e427-b943-40a4-bd2f-1876d59aa0c5",
-    "uploadDate": "2025-08-13T15:54:37.780Z",
-    "fileSize": "0.71 MB"
-  }
-}
-
- */

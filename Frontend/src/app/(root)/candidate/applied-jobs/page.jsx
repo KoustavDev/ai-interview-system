@@ -27,15 +27,8 @@ export default function AppliedJobsPageDemo() {
         phone: app?.recruiter?.contactNumber,
       },
     }));
-
-    // status.totalApplications = data.totalApplications;
-    // status.pendingCount = data.statusCounts.pending;
-    // status.interviewedCount = data.statusCounts.interviewed;
-    // status.shortlistedCount = data.statusCounts.shortlisted;
-    // status.rejectedCount = data.statusCounts.rejected;
   }
   const handleContactHR = (jobId, hrContact) => {
-    // In a real app, this might open a contact modal or email client
     console.log(`Contacting HR for job ${jobId}:`, hrContact);
   };
 
